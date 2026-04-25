@@ -1,1 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Unknown Presence</title>
 
+<style>
+body {
+  margin: 0;
+  background: black;
+  color: #00ff9f;
+  font-family: monospace;
+  text-align: center;
+  overflow: hidden;
+}
+
+.screen {
+  display: none;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.active {
+  display: flex;
+}
+
+button {
+  background: black;
+  color: #00ff9f;
+  border: 1px solid #00ff9f;
+  padding: 10px 20px;
+  margin: 10px;
+  cursor: pointer;
+}
+
+input {
+  background: black;
+  color: #00ff9f;
+  border: 1px solid #00ff9f;
+  padding: 10px;
+  text-align: center;
+}
+
+#yes {
+  position: absolute;
+}
+</style>
+</head>
+
+<body>
+
+<!-- AUDIO -->
+<audio id="bgm" loop>
+  <source src="ambient.mp3" type="audio/mpeg">
+</audio>
+
+<!-- SCREEN -->
+<div id="l0" class="screen active">
+  <h1>⚠ SIGNAL INTERCEPTED</h1>
+  <p>Hint: ek sher ka janmdin 🐯</p>
+  <input type="password" id="pass">
+  <button onclick="checkPass()">ENTER</button>
+  <p id="error"></p>
+</div>
+
+<div id="l1" class="screen">
+  <h2>You came back…</h2>
+  <button onclick="nextLevel(2)">Continue</button>
+</div>
+
+<div id="l2" class="screen">
+  <h2>Will you ever block me?</h2>
+  <button id="yes">YES</button>
+  <button onclick="nextLevel(3)">NO</button>
+</div>
+
+<div id="l3" class="screen">
+  <h1>You stayed…</h1>
+  <p>Interesting.</p>
+</div>
+
+<script>
+
+let password = "25012006";
+
+function checkPass() {
+  let val = document.getElementById("pass").value;
+  let err = document.getElementById("error");
+
+  // start music
+  let audio = document.getElementById("bgm");
+  audio.volume = 0.3;
+  audio.play();
+
+  if (val === password) {
+    err.innerText = "Access granted...";
+    setTimeout(() => nextLevel(1), 1000);
+  } else {
+    err.innerText = "Wrong...";
+  }
+}
+
+function nextLevel(l) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById("l"+l).classList.add("active");
+}
+
+// YES button escape
+let tries = 0;
+
+setInterval(() => {
+  let yes = document.getElementById("yes");
+  if (!yes) return;
+
+  yes.onmouseover = () => {
+    if (tries < 6) {
+      yes.style.top = Math.random()*window.innerHeight + "px";
+      yes.style.left = Math.random()*window.innerWidth + "px";
+      tries++;
+    } else {
+      yes.innerText = "No escape";
+      yes.disabled = true;
+    }
+  };
+}, 300);
+
+</script>
+
+</body>
+</html>
