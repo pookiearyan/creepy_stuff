@@ -14,6 +14,13 @@ body {
   overflow: hidden;
 }
 
+/* glitch flicker */
+@keyframes glitch {
+  0% {opacity: 1;}
+  50% {opacity: 0.3;}
+  100% {opacity: 1;}
+}
+
 .screen {
   display: none;
   height: 100vh;
@@ -24,6 +31,7 @@ body {
 
 .active {
   display: flex;
+  animation: glitch 1.5s infinite;
 }
 
 button {
@@ -51,34 +59,46 @@ input {
 
 <body>
 
-<!-- AUDIO -->
-<audio id="bgm" loop>
-  <source src="ambient.mp3" type="audio/mpeg">
-</audio>
-
-<!-- SCREEN -->
+<!-- LEVEL 0 -->
 <div id="l0" class="screen active">
   <h1>⚠ SIGNAL INTERCEPTED</h1>
-  <p>Hint: ek sher ka janmdin 🐯</p>
+  <p>…this space wasn’t meant for you…<br>ek sher ka janmdin 🐯</p>
   <input type="password" id="pass">
   <button onclick="checkPass()">ENTER</button>
   <p id="error"></p>
 </div>
 
+<!-- LEVEL 1 -->
 <div id="l1" class="screen">
-  <h2>You came back…</h2>
-  <button onclick="nextLevel(2)">Continue</button>
+  <h2 id="identity"></h2>
+  <button onclick="nextLevel(2)">continue</button>
 </div>
 
+<!-- LEVEL 2 -->
 <div id="l2" class="screen">
-  <h2>Will you ever block me?</h2>
-  <button id="yes">YES</button>
-  <button onclick="nextLevel(3)">NO</button>
+  <h2 id="presence"></h2>
+  <button onclick="nextLevel(3)">go deeper</button>
 </div>
 
+<!-- LEVEL 3 -->
 <div id="l3" class="screen">
+  <h2 id="story"></h2>
+  <button onclick="nextLevel(4)">I’m still here</button>
+</div>
+
+<!-- LEVEL 4 -->
+<div id="l4" class="screen">
+  <h2>Final Check</h2>
+  <p>Will you ever block me?</p>
+  <button id="yes">YES</button>
+  <button onclick="nextLevel(5)">NO</button>
+</div>
+
+<!-- LEVEL 5 -->
+<div id="l5" class="screen">
   <h1>You stayed…</h1>
-  <p>Interesting.</p>
+  <p>…it noticed.</p>
+  <p>…it remembers.</p>
 </div>
 
 <script>
@@ -89,42 +109,80 @@ function checkPass() {
   let val = document.getElementById("pass").value;
   let err = document.getElementById("error");
 
-  // start music
-  let audio = document.getElementById("bgm");
-  audio.volume = 0.3;
-  audio.play();
-
   if (val === password) {
-    err.innerText = "Access granted...";
+    err.innerText = "...access granted";
     setTimeout(() => nextLevel(1), 1000);
   } else {
-    err.innerText = "Wrong...";
+    err.innerText = "...wrong identity";
   }
 }
 
 function nextLevel(l) {
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById("l"+l).classList.add("active");
+  let next = document.getElementById("l" + l);
+  if (next) next.classList.add("active");
+
+  if (l === 1) identity();
+  if (l === 2) presence();
+  if (l === 3) story();
+}
+
+// typing effect
+function type(id, text, speed) {
+  let i = 0;
+  let el = document.getElementById(id);
+  el.innerHTML = "";
+
+  function t() {
+    if (i < text.length) {
+      el.innerHTML += text.charAt(i);
+      i++;
+      setTimeout(t, speed);
+    }
+  }
+  t();
+}
+
+// sequences
+function identity() {
+  type("identity", "…Mysha… Adhara… Dhanvantari… Rasmalai Sherni…", 60);
+}
+
+function presence() {
+  setTimeout(() => {
+    type("presence", "…you weren’t supposed to come back…", 70);
+  }, 800);
+}
+
+function story() {
+  setTimeout(() => {
+    type("story", "2 years… still here… still watching…", 50);
+  }, 800);
 }
 
 // YES button escape
 let tries = 0;
 
-setInterval(() => {
+document.addEventListener("mousemove", () => {
   let yes = document.getElementById("yes");
   if (!yes) return;
 
   yes.onmouseover = () => {
-    if (tries < 6) {
-      yes.style.top = Math.random()*window.innerHeight + "px";
-      yes.style.left = Math.random()*window.innerWidth + "px";
+    if (tries < 7) {
+      yes.style.top = Math.random() * 80 + "%";
+      yes.style.left = Math.random() * 80 + "%";
       tries++;
     } else {
-      yes.innerText = "No escape";
       yes.disabled = true;
+      yes.innerText = "...not allowed";
     }
   };
-}, 300);
+});
+
+// random glitch flash
+setInterval(() => {
+  document.body.style.opacity = Math.random() > 0.9 ? 0.3 : 1;
+}, 200);
 
 </script>
 
